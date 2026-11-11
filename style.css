@@ -149,7 +149,7 @@ footer {
     }
 
     .hero-image {
-        width: 100%;
+        width: 10%;
         max-width: 300px;
         flex: none;
     }
