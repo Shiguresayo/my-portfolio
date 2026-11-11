@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="プロフィールと制作物を紹介する個人ポートフォリオサイトです。">
+  <title>YOUR NAME — Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="#top">YOUR NAME<span>.</span></a>
+    <nav aria-label="メインナビゲーション">
+      <a href="#about">About</a>
+      <a href="#works">Works</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <p class="eyebrow">PERSONAL PORTFOLIO</p>
+      <h1>こんにちは。<br>YOUR NAME です。</h1>
+      <p class="hero-text">興味のあることを、少しずつ形にしています。<br>このサイトではプロフィールと制作物を紹介します。</p>
+      <a class="text-link" href="#works">制作物を見る <span aria-hidden="true">↘</span></a>
+    </section>
+
+    <section class="section" id="about">
+      <div class="section-heading">
+        <p class="eyebrow">01 / ABOUT</p>
+        <h2>プロフィール</h2>
+      </div>
+      <div class="section-content">
+        <p>ここに自己紹介を書きます。好きなこと、関心のある分野、学んでいることなどを簡潔にまとめてください。</p>
+        <dl class="profile-list">
+          <div><dt>NAME</dt><dd>YOUR NAME</dd></div>
+          <div><dt>INTERESTS</dt><dd>Web制作 / プログラミング / デザイン</dd></div>
+          <div><dt>SKILLS</dt><dd>HTML / CSS / JavaScript</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section" id="works">
+      <div class="section-heading">
+        <p class="eyebrow">02 / WORKS</p>
+        <h2>制作物</h2>
+      </div>
+      <div class="section-content">
+        <article class="work-item">
+          <div class="work-number">01</div>
+          <div>
+            <h3>作品タイトル</h3>
+            <p>制作物の概要や、作った理由をここに記載します。</p>
+            <span class="tag">HTML / CSS / JavaScript</span>
+          </div>
+        </article>
+        <article class="work-item">
+          <div class="work-number">02</div>
+          <div>
+            <h3>次の作品</h3>
+            <p>作品が増えたら、このブロックを複製して追加してください。</p>
+            <span class="tag">In progress</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="section-heading">
+        <p class="eyebrow">03 / CONTACT</p>
+        <h2>連絡先</h2>
+      </div>
+      <div class="section-content">
+        <p>連絡先やSNSを掲載する場合は、ここにリンクを追加してください。</p>
+        <!-- 例：<a class="text-link" href="https://github.com/ユーザー名">GitHub ↗</a> -->
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© <span id="year"></span> YOUR NAME</span>
+    <a href="#top">Back to top ↑</a>
+  </footer>
+</body>
+</html>
