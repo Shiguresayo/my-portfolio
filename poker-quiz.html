@@ -50,19 +50,9 @@
         <div class="cards board" id="boardCards"></div>
       </div>
 
-      <div class="hand-area opponent-area">
-        <p class="card-label">OPPONENT'S HAND</p>
-        <div class="cards">
-          <div class="card back">?</div>
-          <div class="card back">?</div>
-        </div>
-        <p class="hint">相手の手札は非公開です</p>
-      </div>
-    </section>
-
     <section class="panel question-panel" id="questionPanel">
       <h2>あなたの期待勝率は？</h2>
-      <p class="hint">相手の手札がランダムである場合のEquityを予想してください。</p>
+      <p class="hint">勝率を予想してください。</p>
 
       <div class="choices" id="choices">
         <button class="choice" data-answer="3">65%以上</button>
@@ -74,7 +64,7 @@
       <p class="hint" id="message">回答を選択してください。</p>
 
       <div class="answer-result" id="answerResult" hidden>
-        <p class="result-label">推定Equity</p>
+        <p class="result-label">推定勝率</p>
         <strong id="actualEquity">--%</strong>
         <p id="answerMessage"></p>
         <button id="nextButton" class="primary-button">次へ進む</button>
