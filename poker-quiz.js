@@ -462,16 +462,16 @@ function showFinalResult() {
 
   if (score === 4) {
     $("finalComment").textContent =
-      "全問正解です。勝率の読みが正確です。";
+      "全問正解です。";
   } else if (score >= 3) {
     $("finalComment").textContent =
-      "良好な結果です。引き続き経験を積みましょう。";
+      "3問正解です。";
   } else if (score >= 2) {
     $("finalComment").textContent =
-      "基本的な勝率感覚を確認できました。";
+      "2問正解です。";
   } else {
     $("finalComment").textContent =
-      "各ストリートの勝率変化を意識して練習しましょう。";
+      "1正解です。";
   }
 
   $("finalComment").textContent +=
