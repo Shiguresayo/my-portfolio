@@ -11,10 +11,12 @@ const resetButton = document.getElementById("resetButton");
 
 const defaultItems = ["1", "2", "3", "4", "5", "6"];
 
-let items = [...defaultItems];
-saveItems();
+let items = JSON.parse(localStorage.getItem("rouletteItems"))
+  || [...defaultItems];
 
-let history = [];
+let history = JSON.parse(localStorage.getItem("rouletteHistory"))
+  || [];
+
 let rotation = 0;
 let spinning = false;
 
@@ -154,8 +156,9 @@ function spin() {
 
     result.textContent = `結果：${winner}`;
 
-    history.unshift(winner);
-    renderHistory();
+history.unshift(winner);
+localStorage.setItem("rouletteHistory", JSON.stringify(history));
+renderHistory();
 
     spinning = false;
     spinButton.disabled = false;
@@ -191,9 +194,10 @@ resetButton.addEventListener("click", () => {
     });
   });
 
-  saveItems();
-  renderItems();
-  renderHistory();
+saveItems();
+localStorage.setItem("rouletteHistory", JSON.stringify(history));
+renderItems();
+renderHistory();
 
   result.textContent = "抽選してみましょう";
 });
