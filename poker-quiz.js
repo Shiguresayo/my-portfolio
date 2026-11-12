@@ -471,7 +471,7 @@ function showFinalResult() {
       "2問正解です。";
   } else {
     $("finalComment").textContent =
-      "1正解です。";
+      "1問正解です。";
   }
 
   $("finalComment").textContent +=
