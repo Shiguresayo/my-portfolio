@@ -9,7 +9,7 @@ const result = document.getElementById("result");
 const historyList = document.getElementById("historyList");
 const resetButton = document.getElementById("resetButton");
 
-const defaultItems = ["ゲーム", "読書", "散歩", "休憩", "自由時間"];
+const defaultItems = ["1", "2", "3", "4", "5", "6"];
 
 let items = JSON.parse(localStorage.getItem("rouletteItems"))
   || [...defaultItems];
