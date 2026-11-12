@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Poker Equity Calculator</title>
+  <link rel="stylesheet" href="poker.css">
+  <script src="poker.js" defer></script>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <p class="eyebrow">POKER TOOL</p>
+      <h1>Poker Equity Calculator</h1>
+      <p class="subtitle">テキサスホールデム 勝率計算機</p>
+    </header>
+
+    <section class="panel">
+      <h2>自分の手札</h2>
+      <div class="card-inputs" id="heroCards"></div>
+    </section>
+
+    <section class="panel">
+      <h2>コミュニティカード</h2>
+      <div class="card-inputs" id="boardCards"></div>
+      <p class="hint">未指定のカードはシミュレーション時に補完されます。</p>
+    </section>
+
+    <section class="panel">
+      <h2>相手の設定</h2>
+
+      <div class="mode-switch">
+        <button id="randomMode" class="mode-button active" type="button">
+          ランダム
+        </button>
+        <button id="knownMode" class="mode-button" type="button">
+          手札を指定
+        </button>
+      </div>
+
+      <div class="settings-grid">
+        <label>
+          相手の人数
+          <select id="opponents">
+            <option value="1">1人</option>
+            <option value="2" selected>2人</option>
+            <option value="3">3人</option>
+            <option value="4">4人</option>
+            <option value="5">5人</option>
+            <option value="6">6人</option>
+            <option value="7">7人</option>
+            <option value="8">8人</option>
+            <option value="9">9人</option>
+          </select>
+        </label>
+
+        <label>
+          試行回数
+          <select id="iterations">
+            <option value="1000">1,000回</option>
+            <option value="5000">5,000回</option>
+            <option value="10000" selected>10,000回</option>
+            <option value="25000">25,000回</option>
+            <option value="50000">50,000回</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="knownOpponents" hidden>
+        <h3>相手の手札</h3>
+        <p class="hint">各プレイヤーの手札を2枚ずつ指定してください。</p>
+        <div id="opponentCardInputs"></div>
+      </div>
+    </section>
+
+    <button id="calculate" class="calculate-button" type="button">
+      勝率を計算する
+    </button>
+
+    <section class="panel results" id="results" hidden>
+      <h2>計算結果</h2>
+
+      <div class="equity-result">
+        <span>Equity</span>
+        <strong id="equity">0.00%</strong>
+        <p>ポット獲得期待率</p>
+      </div>
+
+      <div class="result-grid">
+        <div>
+          <span>勝率</span>
+          <strong id="winRate">0.00%</strong>
+        </div>
+        <div>
+          <span>引き分け率</span>
+          <strong id="tieRate">0.00%</strong>
+        </div>
+        <div>
+          <span>敗北率</span>
+          <strong id="lossRate">0.00%</strong>
+        </div>
+      </div>
+
+      <p class="hint" id="resultInfo"></p>
+    </section>
+
+    <footer>
+      <p>Monte Carlo Simulation / Texas Hold'em</p>
+    </footer>
+  </main>
+</body>
+</html>
