@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Poker Equity Quiz</title>
+  <link rel="stylesheet" href="poker-quiz.css">
+  <script src="poker-quiz.js" defer></script>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <p class="eyebrow">POKER TRAINING</p>
+      <h1>Poker Equity Quiz</h1>
+      <p class="subtitle">テキサスホールデム 勝率予想ゲーム</p>
+    </header>
+
+    <section class="score-bar">
+      <div>
+        <span>正解数</span>
+        <strong id="score">0 / 4</strong>
+      </div>
+      <div>
+        <span>正答率</span>
+        <strong id="accuracy">0%</strong>
+      </div>
+      <div>
+        <span>連続正解</span>
+        <strong id="streak">0</strong>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="round-header">
+        <div>
+          <p class="eyebrow" id="roundNumber">ROUND 1 / 4</p>
+          <h2 id="streetName">PREFLOP</h2>
+        </div>
+        <span class="street-badge" id="streetBadge">PRE-FLOP</span>
+      </div>
+
+      <div class="hand-area">
+        <p class="card-label">YOUR HAND</p>
+        <div class="cards" id="heroCards"></div>
+      </div>
+
+      <div class="hand-area">
+        <p class="card-label">COMMUNITY CARDS</p>
+        <div class="cards board" id="boardCards"></div>
+      </div>
+
+      <div class="hand-area opponent-area">
+        <p class="card-label">OPPONENT'S HAND</p>
+        <div class="cards">
+          <div class="card back">?</div>
+          <div class="card back">?</div>
+        </div>
+        <p class="hint">相手の手札は非公開です</p>
+      </div>
+    </section>
+
+    <section class="panel question-panel" id="questionPanel">
+      <h2>あなたの期待勝率は？</h2>
+      <p class="hint">相手の手札がランダムである場合のEquityを予想してください。</p>
+
+      <div class="choices" id="choices">
+        <button class="choice" data-answer="3">65%以上</button>
+        <button class="choice" data-answer="2">50〜65%</button>
+        <button class="choice" data-answer="1">35〜50%</button>
+        <button class="choice" data-answer="0">35%以下</button>
+      </div>
+
+      <p class="hint" id="message">回答を選択してください。</p>
+
+      <div class="answer-result" id="answerResult" hidden>
+        <p class="result-label">推定Equity</p>
+        <strong id="actualEquity">--%</strong>
+        <p id="answerMessage"></p>
+        <button id="nextButton" class="primary-button">次へ進む</button>
+      </div>
+    </section>
+
+    <section class="panel final-panel" id="finalPanel" hidden>
+      <p class="eyebrow">GAME RESULT</p>
+      <h2>ゲーム終了</h2>
+      <div class="final-score">
+        <strong id="finalScore">0 / 4</strong>
+        <span id="finalAccuracy">正答率 0%</span>
+      </div>
+      <p id="finalComment"></p>
+      <button id="restartButton" class="primary-button">もう一度プレイ</button>
+    </section>
+
+    <footer>Monte Carlo Simulation · Heads-up Texas Hold'em</footer>
+  </main>
+</body>
+</html>
