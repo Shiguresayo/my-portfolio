@@ -45,6 +45,7 @@ let answered = false;
 
 const $ = id => document.getElementById(id);
 
+// シャッフル
 function shuffle(array) {
   const result = [...array];
 
@@ -56,6 +57,7 @@ function shuffle(array) {
   return result;
 }
 
+// カード配布
 function dealCards() {
   const shuffled = shuffle(deck);
 
@@ -64,6 +66,7 @@ function dealCards() {
   fullBoard = shuffled.slice(4, 9);
 }
 
+// カード表示
 function renderCard(card) {
   const element = document.createElement("div");
   element.className = `card ${card.color}`;
@@ -74,20 +77,16 @@ function renderCard(card) {
   return element;
 }
 
-function renderBack() {
-  const element = document.createElement("div");
-  element.className = "card back";
-  element.textContent = "?";
-  return element;
-}
-
+// 空のカード表示
 function renderEmpty() {
   const element = document.createElement("div");
   element.className = "card empty";
   element.textContent = "–";
+
   return element;
 }
 
+// ゲーム画面更新
 function renderGame() {
   $("heroCards").replaceChildren(
     ...hero.map(renderCard)
@@ -136,6 +135,13 @@ function renderGame() {
   document.querySelectorAll(".choice").forEach(button => {
     button.disabled = false;
     button.classList.remove("correct", "wrong");
+
+    button.textContent = [
+      "35%以下",
+      "35〜50%",
+      "50〜65%",
+      "65%以上"
+    ][Number(button.dataset.answer)];
   });
 }
 
@@ -173,26 +179,32 @@ function evaluateFive(cards) {
     }
   }
 
+  // ストレートフラッシュ
   if (flush && straightHigh) {
     return [8, straightHigh];
   }
 
+  // フォーカード
   if (groups[0].count === 4) {
     return [7, groups[0].value, groups[1].value];
   }
 
+  // フルハウス
   if (groups[0].count === 3 && groups[1].count === 2) {
     return [6, groups[0].value, groups[1].value];
   }
 
+  // フラッシュ
   if (flush) {
     return [5, ...values];
   }
 
+  // ストレート
   if (straightHigh) {
     return [4, straightHigh];
   }
 
+  // スリーカード
   if (groups[0].count === 3) {
     return [
       3,
@@ -203,6 +215,7 @@ function evaluateFive(cards) {
     ];
   }
 
+  // ツーペア
   if (groups[0].count === 2 && groups[1].count === 2) {
     const pairs = groups
       .filter(group => group.count === 2)
@@ -216,6 +229,7 @@ function evaluateFive(cards) {
     return [2, ...pairs, kicker];
   }
 
+  // ワンペア
   if (groups[0].count === 2) {
     return [
       1,
@@ -227,9 +241,11 @@ function evaluateFive(cards) {
     ];
   }
 
+  // ハイカード
   return [0, ...values];
 }
 
+// 役の強さを比較
 function compareScores(a, b) {
   for (let i = 0; i < Math.max(a.length, b.length); i++) {
     const av = a[i] ?? 0;
@@ -243,6 +259,7 @@ function compareScores(a, b) {
   return 0;
 }
 
+// 組み合わせを作る
 function combinations(cards, size) {
   const result = [];
 
@@ -264,9 +281,11 @@ function combinations(cards, size) {
   }
 
   search(0, []);
+
   return result;
 }
 
+// 7枚から最強の5枚を評価
 function evaluateSeven(cards) {
   let best = null;
 
@@ -339,6 +358,17 @@ function getCategory(equity) {
   return 0;
 }
 
+// 区分名
+function getCategoryLabel(category) {
+  return [
+    "35%以下",
+    "35〜50%",
+    "50〜65%",
+    "65%以上"
+  ][category];
+}
+
+// スコア更新
 function updateScore() {
   $("score").textContent = `${score} / 4`;
   $("streak").textContent = streak;
@@ -347,6 +377,7 @@ function updateScore() {
     `${Math.round(score / (stageIndex + 1) * 100)}%`;
 }
 
+// 回答処理
 function answerQuestion(selected) {
   if (answered) return;
 
@@ -373,12 +404,17 @@ function answerQuestion(selected) {
   document.querySelectorAll(".choice").forEach(button => {
     const answer = Number(button.dataset.answer);
 
-    button.disabled = true;
+    // 回答後もクリックできるようにする
+    button.disabled = false;
+
+    button.classList.remove("correct", "wrong");
 
     if (answer === correct) {
       button.classList.add("correct");
+      button.textContent = `正解：${getCategoryLabel(answer)}`;
     } else if (answer === selected) {
       button.classList.add("wrong");
+      button.textContent = `不正解：${getCategoryLabel(answer)}`;
     }
   });
 
@@ -386,8 +422,8 @@ function answerQuestion(selected) {
     `${equity.toFixed(2)}%`;
 
   $("answerMessage").textContent = isCorrect
-    ? "正解です。"
-    : "不正解です。。";
+    ? "正解です。もう一度選択肢を押すと次へ進みます。"
+    : "不正解です。もう一度選択肢を押すと次へ進みます。";
 
   $("message").textContent =
     `正解：${getCategoryLabel(correct)}`;
@@ -400,16 +436,10 @@ function answerQuestion(selected) {
   updateScore();
 }
 
-function getCategoryLabel(category) {
-  return [
-    "35%以下",
-    "35〜50%",
-    "50〜65%",
-    "65%以上"
-  ][category];
-}
-
+// 次のストリートへ
 function nextStage() {
+  if (!answered) return;
+
   if (stageIndex < 3) {
     stageIndex++;
     renderGame();
@@ -418,6 +448,7 @@ function nextStage() {
   }
 }
 
+// 最終結果
 function showFinalResult() {
   $("questionPanel").hidden = true;
   $("finalPanel").hidden = false;
@@ -425,9 +456,29 @@ function showFinalResult() {
   const accuracy = Math.round(score / 4 * 100);
 
   $("finalScore").textContent = `${score} / 4`;
+
   $("finalAccuracy").textContent =
     `正答率 ${accuracy}%`;
 
+  if (score === 4) {
+    $("finalComment").textContent =
+      "全問正解です。勝率の読みが正確です。";
+  } else if (score >= 3) {
+    $("finalComment").textContent =
+      "良好な結果です。引き続き経験を積みましょう。";
+  } else if (score >= 2) {
+    $("finalComment").textContent =
+      "基本的な勝率感覚を確認できました。";
+  } else {
+    $("finalComment").textContent =
+      "各ストリートの勝率変化を意識して練習しましょう。";
+  }
+
+  $("finalComment").textContent +=
+    ` 最高連続正解数：${bestStreak}`;
+}
+
+// 新しいゲーム
 function startGame() {
   dealCards();
 
@@ -439,13 +490,24 @@ function startGame() {
   renderGame();
 }
 
+// 選択肢のクリック処理
 document.querySelectorAll(".choice").forEach(button => {
   button.addEventListener("click", () => {
-    answerQuestion(Number(button.dataset.answer));
+    if (answered) {
+      // 回答済みなら次のストリートへ
+      nextStage();
+    } else {
+      // 未回答なら回答として処理
+      answerQuestion(Number(button.dataset.answer));
+    }
   });
 });
 
+// 次へボタン
 $("nextButton").addEventListener("click", nextStage);
+
+// 再プレイボタン
 $("restartButton").addEventListener("click", startGame);
 
+// ゲーム開始
 startGame();
