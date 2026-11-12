@@ -1,0 +1,157 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f7f6f2;
+  color: #292923;
+  font-family: "Noto Sans JP", sans-serif;
+}
+
+header {
+  padding: 24px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+header a {
+  position: absolute;
+  left: 24px;
+  top: 30px;
+  color: #777;
+  text-decoration: none;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 25px;
+}
+
+main {
+  width: min(900px, 92%);
+  margin: 50px auto;
+}
+
+.wheel-area {
+  position: relative;
+  width: min(440px, 100%);
+  margin: 0 auto 60px;
+  text-align: center;
+}
+
+#wheel {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 4s cubic-bezier(.12,.72,.12,1);
+}
+
+.pointer {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 30px solid #292923;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  background: #596b5d;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:hover {
+  opacity: .8;
+}
+
+button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+#spinButton {
+  margin-top: 24px;
+  min-width: 160px;
+  font-weight: bold;
+  letter-spacing: .1em;
+}
+
+#result {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.settings, .history {
+  margin-top: 40px;
+  padding: 28px;
+  background: white;
+  border: 1px solid #e7e5df;
+  border-radius: 12px;
+}
+
+.add-area {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+#itemList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 4px;
+  border-bottom: 1px solid #eee;
+}
+
+.delete {
+  padding: 6px 12px;
+  background: #a66b6b;
+}
+
+.reset {
+  margin-top: 15px;
+  background: #777;
+}
+
+#historyList li {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  color: #777;
+}
+
+@media (max-width: 600px) {
+  header a {
+    position: static;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  main {
+    margin-top: 30px;
+  }
+
+  .settings, .history {
+    padding: 20px;
+  }
+}
