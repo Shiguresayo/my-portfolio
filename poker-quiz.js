@@ -460,20 +460,6 @@ function showFinalResult() {
   $("finalAccuracy").textContent =
     `正答率 ${accuracy}%`;
 
-  if (score === 4) {
-    $("finalComment").textContent =
-      "全問正解です。";
-  } else if (score >= 3) {
-    $("finalComment").textContent =
-      "3問正解です。";
-  } else if (score >= 2) {
-    $("finalComment").textContent =
-      "2問正解です。";
-  } else {
-    $("finalComment").textContent =
-      "1問正解です。";
-  }
-
   $("finalComment").textContent +=
     ` 最高連続正解数：${bestStreak}`;
 }
