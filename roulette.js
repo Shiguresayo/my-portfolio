@@ -11,8 +11,8 @@ const resetButton = document.getElementById("resetButton");
 
 const defaultItems = ["1", "2", "3", "4", "5", "6"];
 
-let items = JSON.parse(localStorage.getItem("rouletteItems"))
-  || [...defaultItems];
+let items = [...defaultItems];
+saveItems();
 
 let history = [];
 let rotation = 0;
