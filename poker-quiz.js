@@ -429,10 +429,6 @@ function answerQuestion(selected) {
     `正解：${getCategoryLabel(correct)}`;
 
   $("answerResult").hidden = false;
-
-  $("nextButton").textContent =
-    stageIndex === 3 ? "結果を見る" : "次のストリートへ";
-
   updateScore();
 }
 
@@ -489,8 +485,6 @@ document.querySelectorAll(".choice").forEach(button => {
   });
 });
 
-// 次へボタン
-$("nextButton").addEventListener("click", nextStage);
 
 // 再プレイボタン
 $("restartButton").addEventListener("click", startGame);
