@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Roulette | 小夜時雨</title>
+  <link rel="stylesheet" href="roulette.css">
+  <script src="roulette.js" defer></script>
+</head>
+<body>
+  <header>
+    <a href="index.html">← Portfolio</a>
+    <h1>Roulette</h1>
+  </header>
+
+  <main>
+    <section class="wheel-area">
+      <div class="pointer"></div>
+      <canvas id="wheel" width="700" height="700"></canvas>
+      <button id="spinButton">SPIN</button>
+      <p id="result">抽選してみましょう</p>
+    </section>
+
+    <section class="settings">
+      <h2>抽選項目</h2>
+
+      <div class="add-area">
+        <input id="itemInput" type="text"
+          placeholder="項目を入力してください">
+        <button id="addButton">追加</button>
+      </div>
+
+      <ul id="itemList"></ul>
+
+      <button id="resetButton" class="reset">
+        初期状態に戻す
+      </button>
+    </section>
+
+    <section class="history">
+      <h2>抽選履歴</h2>
+      <ul id="historyList"></ul>
+    </section>
+  </main>
+</body>
+</html>
