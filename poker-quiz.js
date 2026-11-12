@@ -26,10 +26,10 @@ for (const suit of SUITS) {
 }
 
 const STAGES = [
-  { name: "PREFLOP", label: "プリフロップ", board: 0 },
-  { name: "FLOP", label: "フロップ", board: 3 },
-  { name: "TURN", label: "ターン", board: 4 },
-  { name: "RIVER", label: "リバー", board: 5 }
+  { name: "PREFLOP", label: "PREFLOP", board: 0 },
+  { name: "FLOP", label: "FLOP", board: 3 },
+  { name: "TURN", label: "TURN", board: 4 },
+  { name: "RIVER", label: "RIVER", board: 5 }
 ];
 
 const SIMULATIONS = 5000;
@@ -387,7 +387,7 @@ function answerQuestion(selected) {
 
   $("answerMessage").textContent = isCorrect
     ? "正解です。"
-    : "不正解です。正しい区分を緑色で表示しています。";
+    : "不正解です。。";
 
   $("message").textContent =
     `正解：${getCategoryLabel(correct)}`;
@@ -427,24 +427,6 @@ function showFinalResult() {
   $("finalScore").textContent = `${score} / 4`;
   $("finalAccuracy").textContent =
     `正答率 ${accuracy}%`;
-
-  if (score === 4) {
-    $("finalComment").textContent =
-      "全問正解です。勝率の読みが正確です。";
-  } else if (score >= 3) {
-    $("finalComment").textContent =
-      "良好な結果です。引き続き経験を積みましょう。";
-  } else if (score >= 2) {
-    $("finalComment").textContent =
-      "基本的な勝率感覚を確認できました。";
-  } else {
-    $("finalComment").textContent =
-      "各ストリートの勝率変化を意識して練習しましょう。";
-  }
-
-  $("finalComment").textContent +=
-    ` 最高連続正解数：${bestStreak}`;
-}
 
 function startGame() {
   dealCards();
