@@ -1,3 +1,4 @@
+
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
@@ -10,29 +11,27 @@ const historyList = document.getElementById("historyList");
 const resetButton = document.getElementById("resetButton");
 
 const defaultItems = ["1", "2", "3", "4", "5", "6"];
+const MAX_ITEMS = 100;
 
-let items = JSON.parse(localStorage.getItem("rouletteItems"))
+let items = JSON.parse(localStorage.getItem("rouletteItems") || "null")
   || [...defaultItems];
 
-let history = JSON.parse(localStorage.getItem("rouletteHistory"))
-  || [];
+let history = JSON.parse(localStorage.getItem("rouletteHistory") || "[]");
 
 let rotation = 0;
 let spinning = false;
 
 const colors = [
-  "#8295a9",
-  "#c9a6a0",
-  "#9aab98",
-  "#d7bd8d",
-  "#9b91ad",
-  "#819d9c",
-  "#c49b83",
-  "#9e9eae"
+  "#8295a9", "#c9a6a0", "#9aab98", "#d7bd8d",
+  "#9b91ad", "#819d9c", "#c49b83", "#9e9eae"
 ];
 
 function saveItems() {
   localStorage.setItem("rouletteItems", JSON.stringify(items));
+}
+
+function saveHistory() {
+  localStorage.setItem("rouletteHistory", JSON.stringify(history));
 }
 
 function drawWheel() {
@@ -47,7 +46,7 @@ function drawWheel() {
     ctx.fillStyle = "#ddd";
     ctx.fill();
     ctx.fillStyle = "#555";
-    ctx.font = "30px sans-serif";
+    ctx.font = "24px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("項目を追加してください", center, center);
     return;
@@ -73,12 +72,10 @@ function drawWheel() {
     ctx.save();
     ctx.translate(center, center);
     ctx.rotate(start + arc / 2);
-
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#fff";
     ctx.font = "bold 24px sans-serif";
-
     ctx.fillText(item, radius - 25, 0);
     ctx.restore();
   });
@@ -103,6 +100,7 @@ function renderItems() {
 
     button.addEventListener("click", () => {
       if (spinning) return;
+
       items.splice(index, 1);
       saveItems();
       renderItems();
@@ -112,6 +110,9 @@ function renderItems() {
     itemList.appendChild(li);
   });
 
+  const count = document.getElementById("itemCount");
+  if (count) count.textContent = `${items.length} / 100 件`;
+
   drawWheel();
 }
 
@@ -119,6 +120,11 @@ function addItem() {
   const value = itemInput.value.trim();
 
   if (!value || spinning) return;
+
+  if (items.length >= MAX_ITEMS) {
+    result.textContent = "最大100個までです";
+    return;
+  }
 
   items.push(value);
   itemInput.value = "";
@@ -138,30 +144,19 @@ function spin() {
 
   spinning = true;
   spinButton.disabled = true;
+  addButton.disabled = true;
 
   const winnerIndex = Math.floor(Math.random() * items.length);
   const arc = 360 / items.length;
 
+  const currentAngle = ((rotation % 360) + 360) % 360;
   const targetAngle =
     (360 - (winnerIndex + 0.5) * arc) % 360;
 
-  rotation += 360 * 5 + targetAngle;
+  const adjustment =
+    (targetAngle - currentAngle + 360) % 360;
 
-  canvas.style.transform = `rotate(${rotation}deg)`;
-
-function spin() {
-  if (spinning || items.length === 0) return;
-
-  spinning = true;
-  spinButton.disabled = true;
-
-  const winnerIndex = Math.floor(Math.random() * items.length);
-  const arc = 360 / items.length;
-
-  const targetAngle =
-    (360 - (winnerIndex + 0.5) * arc) % 360;
-
-  rotation += 360 * 5 + targetAngle;
+  rotation += 360 * 5 + adjustment;
 
   canvas.style.transform = `rotate(${rotation}deg)`;
 
@@ -173,16 +168,12 @@ function spin() {
     result.textContent = `結果：${winner}`;
 
     history.unshift(winner);
-
-    localStorage.setItem(
-      "rouletteHistory",
-      JSON.stringify(history)
-    );
-
+    saveHistory();
     renderHistory();
 
     spinning = false;
     spinButton.disabled = false;
+    addButton.disabled = false;
   }, 4100);
 }
 
@@ -215,12 +206,15 @@ resetButton.addEventListener("click", () => {
     });
   });
 
-saveItems();
-localStorage.setItem("rouletteHistory", JSON.stringify(history));
-renderItems();
-renderHistory();
+  saveItems();
+  saveHistory();
+
+  renderItems();
+  renderHistory();
 
   result.textContent = "抽選してみましょう";
 });
 
+saveItems();
 renderItems();
+renderHistory();
