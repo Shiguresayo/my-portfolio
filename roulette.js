@@ -149,6 +149,22 @@ function spin() {
 
   canvas.style.transform = `rotate(${rotation}deg)`;
 
+function spin() {
+  if (spinning || items.length === 0) return;
+
+  spinning = true;
+  spinButton.disabled = true;
+
+  const winnerIndex = Math.floor(Math.random() * items.length);
+  const arc = 360 / items.length;
+
+  const targetAngle =
+    (360 - (winnerIndex + 0.5) * arc) % 360;
+
+  rotation += 360 * 5 + targetAngle;
+
+  canvas.style.transform = `rotate(${rotation}deg)`;
+
   result.textContent = "抽選中...";
 
   setTimeout(() => {
@@ -156,9 +172,14 @@ function spin() {
 
     result.textContent = `結果：${winner}`;
 
-history.unshift(winner);
-localStorage.setItem("rouletteHistory", JSON.stringify(history));
-renderHistory();
+    history.unshift(winner);
+
+    localStorage.setItem(
+      "rouletteHistory",
+      JSON.stringify(history)
+    );
+
+    renderHistory();
 
     spinning = false;
     spinButton.disabled = false;
