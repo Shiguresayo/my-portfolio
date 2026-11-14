@@ -430,7 +430,15 @@ let gap = 3;
 ========================= */
 
 function parseTiles(value) {
-  const str = value.replace(/\s/g, "");
+  let str = value.replace(/\s/g, "");
+
+  // 345m のような末尾指定形式を m345 に変換
+  const suffixMatch = str.match(/^([0-9]+)([mpsz])$/i);
+
+  if (suffixMatch) {
+    str = suffixMatch[2] + suffixMatch[1];
+  }
+
   const result = [];
   let suit = null;
 
