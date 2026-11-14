@@ -1,0 +1,1154 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mahjong Tile Maker</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #f4f5f7;
+  --panel: #fff;
+  --text: #292d32;
+  --muted: #858b94;
+  --line: #e5e7eb;
+  --accent: #28775a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 32px 16px 60px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+.container {
+  max-width: 1050px;
+  margin: auto;
+}
+
+header { margin-bottom: 26px; }
+
+h1 {
+  font-size: 27px;
+  margin: 0 0 6px;
+}
+
+h2 {
+  font-size: 17px;
+  margin: 0 0 18px;
+}
+
+p { line-height: 1.7; }
+
+.subtitle, .help {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.field { margin-bottom: 14px; }
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #dce0e5;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 14px;
+  background: #fff;
+  color: var(--text);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid #b6d7c8;
+  border-color: var(--accent);
+}
+
+button {
+  padding: 10px 15px;
+  border: 0;
+  border-radius: 7px;
+  background: #30363d;
+  color: white;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+button:hover { opacity: .82; }
+
+button.primary { background: var(--accent); }
+button.light {
+  background: #edf0f2;
+  color: #333;
+}
+button.danger { background: #b84c4c; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 15px;
+}
+
+.meld {
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  margin-bottom: 12px;
+  background: #fafafa;
+}
+
+.meld-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  gap: 12px;
+}
+
+.meld .field { margin-bottom: 10px; }
+
+.preview-wrap {
+  padding: 16px;
+  background: #eee;
+  border-radius: 9px;
+  overflow-x: auto;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+}
+
+#board {
+  display: block;
+  flex-shrink: 0;
+  max-width: none;
+}
+
+#board [data-hand-index] {
+  cursor: pointer;
+}
+
+#board [data-hand-index].selected {
+  filter: drop-shadow(0 0 4px #267bdb);
+}
+
+.preview-tools {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.tool-box {
+  background: #f7f8f9;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.tool-box label { margin-bottom: 8px; }
+
+.color-options {
+  display: flex;
+  gap: 9px;
+}
+
+.color-button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 2px solid #bbb;
+  border-radius: 50%;
+}
+
+.color-button.active {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+#message {
+  font-size: 12px;
+  color: #b43d3d;
+  margin-top: 10px;
+}
+
+#tweet { min-height: 110px; }
+
+.count {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 5px;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 30px;
+}
+
+@media(max-width:650px) {
+  body { padding: 20px 10px 40px; }
+  .panel { padding: 16px; }
+  .grid, .preview-tools { grid-template-columns: 1fr; }
+  .meld-grid { grid-template-columns: 1fr; gap: 0; }
+  h1 { font-size: 23px; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+  <h1>Mahjong Tile Maker</h1>
+  <div class="subtitle">
+    麻雀の牌姿を作成・画像出力するツール
+  </div>
+</header>
+
+<!-- 手牌 -->
+<section class="panel">
+  <h2>01 / 手牌入力</h2>
+
+  <div class="grid">
+    <div class="field">
+      <label>萬子（マンズ）</label>
+      <input id="man" placeholder="例：123456789" maxlength="14">
+    </div>
+
+    <div class="field">
+      <label>筒子（ピンズ）</label>
+      <input id="pin" placeholder="例：123456789" maxlength="14">
+    </div>
+
+    <div class="field">
+      <label>索子（ソーズ）</label>
+      <input id="sou" placeholder="例：123456789" maxlength="14">
+    </div>
+
+    <div class="field">
+      <label>字牌</label>
+      <input id="honor" placeholder="例：東南西北白發中" maxlength="14">
+    </div>
+  </div>
+
+  <p class="help">
+    数字を左から順番に入力します。赤五は「0」で入力できます。
+    字牌は東南西北白發中、または1～7で入力できます。
+  </p>
+</section>
+
+<!-- 副露 -->
+<section class="panel">
+  <h2>02 / 副露入力</h2>
+
+  <div id="melds"></div>
+
+  <button id="addMeld" class="light">＋ 副露を追加</button>
+
+  <p class="help">
+    牌の入力例：345m（チー）、555p（ポン）、7777s（カン）
+  </p>
+  <p class="help">
+    m＝萬子 / p＝筒子 / s＝索子 / z＝字牌
+  </p>
+</section>
+
+<!-- プレビュー -->
+<section class="panel">
+  <h2>03 / 牌姿プレビュー</h2>
+
+  <div class="preview-wrap" id="previewWrap">
+    <svg id="board"
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="麻雀牌姿プレビュー">
+    </svg>
+  </div>
+
+  <div id="message"></div>
+
+  <div class="preview-tools">
+
+    <div class="tool-box">
+      <label>背景色</label>
+      <div class="color-options">
+        <button class="color-button active"
+          style="background:#ffffff"
+          data-color="#ffffff"
+          title="白"></button>
+        <button class="color-button"
+          style="background:#eeeeee"
+          data-color="#eeeeee"
+          title="グレー"></button>
+        <button class="color-button"
+          style="background:#dcebe1"
+          data-color="#dcebe1"
+          title="淡い緑"></button>
+        <button class="color-button"
+          style="background:#252b35"
+          data-color="#252b35"
+          title="ダーク"></button>
+      </div>
+    </div>
+
+    <div class="tool-box">
+      <label>牌のサイズ</label>
+      <select id="tileSize">
+        <option value="small">小</option>
+        <option value="normal" selected>標準</option>
+        <option value="large">大</option>
+      </select>
+    </div>
+
+    <div class="tool-box">
+      <label>画像解像度</label>
+      <select id="resolution">
+        <option value="2">2倍</option>
+        <option value="3" selected>3倍</option>
+        <option value="4">4倍</option>
+      </select>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button id="download" class="primary">
+      PNG画像を保存
+    </button>
+    <button id="moveLeft" class="light">
+      選択牌を左へ
+    </button>
+    <button id="moveRight" class="light">
+      選択牌を右へ
+    </button>
+  </div>
+
+  <p class="help">
+    手牌の牌をクリックして選択し、左右ボタンで順番を変更できます。
+  </p>
+</section>
+
+<!-- X -->
+<section class="panel">
+  <h2>04 / X投稿設定</h2>
+
+  <div class="field">
+    <label>投稿テンプレート</label>
+    <select id="template">
+      <option value="custom">自由入力</option>
+      <option value="question">何切る問題</option>
+      <option value="analysis">牌譜解説</option>
+      <option value="hand">手牌紹介</option>
+      <option value="quiz">麻雀クイズ</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>投稿文章</label>
+    <textarea id="tweet">この牌姿、何を切る？
+#麻雀 #何切る</textarea>
+    <div class="count" id="count">0文字</div>
+  </div>
+
+  <div class="actions">
+    <button id="copy" class="light">文章をコピー</button>
+    <button id="post" class="primary">X投稿画面を開く</button>
+  </div>
+
+  <p class="help">
+    画像は先に保存し、Xの投稿画面で手動添付してください。
+  </p>
+</section>
+
+<footer>
+  Mahjong Tile Maker
+</footer>
+
+</div>
+
+<script>
+/* =========================
+   設定
+========================= */
+
+const $ = id => document.getElementById(id);
+
+const HONORS = {
+  "東":1, "南":2, "西":3, "北":4,
+  "白":5, "發":6, "発":6, "中":7
+};
+
+const HONOR_NAMES = [
+  "", "東", "南", "西", "北", "白", "發", "中"
+];
+
+const COLORS = {
+  black: "#252525",
+  red: "#d52b32",
+  green: "#16834c",
+  blue: "#246bba"
+};
+
+let meldId = 0;
+let selectedIndex = -1;
+let backgroundColor = "#ffffff";
+let handTiles = [];
+let meldGroups = [];
+let tileWidth = 48;
+let tileHeight = 68;
+let gap = 3;
+
+/* =========================
+   入力解析
+========================= */
+
+function parseTiles(value) {
+  const str = value.replace(/\s/g, "");
+  const result = [];
+  let suit = null;
+
+  for (const char of str) {
+
+    if ("mpsz".includes(char.toLowerCase())) {
+      suit = char.toLowerCase();
+      continue;
+    }
+
+    if (/[0-9]/.test(char)) {
+      if (!suit) {
+        throw new Error("牌の種類を指定してください。");
+      }
+
+      const n = Number(char);
+
+      if (n === 0 && suit === "z") {
+        throw new Error("字牌に赤牌はありません。");
+      }
+
+      const actual = n === 0 ? 5 : n;
+
+      if (actual < 1 || actual > 9) {
+        throw new Error("牌の数字が不正です。");
+      }
+
+      if (suit === "z" && actual > 7) {
+        throw new Error("字牌は1～7です。");
+      }
+
+      result.push({
+        suit,
+        n: actual,
+        red: char === "0"
+      });
+
+      continue;
+    }
+
+    if (HONORS[char]) {
+      result.push({
+        suit: "z",
+        n: HONORS[char],
+        red: false
+      });
+      suit = "z";
+      continue;
+    }
+
+    throw new Error("認識できない文字：" + char);
+  }
+
+  return result;
+}
+
+function parseHandInput(id, suit) {
+  const value = $(id).value.trim();
+
+  if (!value) return [];
+
+  if (suit === "z") {
+    return parseTiles(value.includes("z") ? value : value + "z");
+  }
+
+  return parseTiles(value + suit);
+}
+
+/* =========================
+   SVG描画
+========================= */
+
+function rect(x,y,w,h,rx,fill,stroke="#aaa",sw=1) {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}"
+    rx="${rx}" fill="${fill}" stroke="${stroke}"
+    stroke-width="${sw}"/>`;
+}
+
+function text(x,y,str,size,color,weight="bold") {
+  return `<text x="${x}" y="${y}" text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="sans-serif"
+    font-size="${size}" font-weight="${weight}"
+    fill="${color}">${str}</text>`;
+}
+
+function tileSVG(t, x, y, back=false, rotated=false) {
+
+  const w = tileWidth;
+  const h = tileHeight;
+
+  let transform = `translate(${x},${y})`;
+
+  let body = "";
+
+  if (back) {
+    body = `
+      ${rect(0,0,w,h,5,"#e6e8e9","#a2a6a9",1.5)}
+      ${rect(4,4,w-8,h-8,3,"#315c78","#23465f",1)}
+      <path d="M8 8 L${w-8} ${h-8} M${w-8} 8 L8 ${h-8}"
+        stroke="#8da9bc" stroke-width="1.2" fill="none"/>
+    `;
+  } else {
+
+    body = `
+      ${rect(0,0,w,h,5,"#fff","#aaa",1.3)}
+      ${rect(3,3,w-6,h-6,3,"#fff","#eeeeee",.8)}
+    `;
+
+    if (t.suit === "m") {
+      const color = t.red ? COLORS.red : COLORS.black;
+
+      body += `
+        ${text(w/2,h*.43,t.n,31*tWidthFactor(),color)}
+        ${text(w/2,h*.76,"萬",13*tWidthFactor(),COLORS.black)}
+      `;
+    }
+
+    if (t.suit === "p") {
+      const patterns = {
+        1:[[.5,.5]],
+        2:[[.5,.28],[.5,.72]],
+        3:[[.5,.2],[.5,.5],[.5,.8]],
+        4:[[.28,.28],[.72,.28],[.28,.72],[.72,.72]],
+        5:[[.28,.2],[.72,.2],[.5,.5],[.28,.8],[.72,.8]],
+        6:[[.28,.18],[.72,.18],[.28,.5],[.72,.5],[.28,.82],[.72,.82]],
+        7:[[.28,.15],[.72,.15],[.5,.34],[.28,.5],[.72,.5],[.28,.83],[.72,.83]],
+        8:[[.28,.15],[.72,.15],[.28,.38],[.72,.38],[.28,.62],[.72,.62],[.28,.85],[.72,.85]],
+        9:[[.28,.15],[.72,.15],[.28,.36],[.72,.36],[.5,.5],[.28,.64],[.72,.64],[.28,.85],[.72,.85]]
+      };
+
+      const dots = patterns[t.n];
+      const colors = t.red
+        ? [COLORS.red,COLORS.red,COLORS.red]
+        : [COLORS.red,COLORS.blue,COLORS.green];
+
+      dots.forEach(([px,py],i) => {
+        const r = w*.105;
+        body += `<circle cx="${w*px}" cy="${h*py}"
+          r="${r}" fill="${colors[i%3]}"/>`;
+      });
+    }
+
+    if (t.suit === "s") {
+      const positions = {
+        1:[[.5,.5]],
+        2:[[.5,.28],[.5,.72]],
+        3:[[.5,.2],[.5,.5],[.5,.8]],
+        4:[[.3,.25],[.7,.25],[.3,.75],[.7,.75]],
+        5:[[.3,.2],[.7,.2],[.5,.5],[.3,.8],[.7,.8]],
+        6:[[.3,.17],[.7,.17],[.3,.5],[.7,.5],[.3,.83],[.7,.83]],
+        7:[[.3,.13],[.7,.13],[.5,.33],[.3,.5],[.7,.5],[.3,.83],[.7,.83]],
+        8:[[.3,.13],[.7,.13],[.3,.38],[.7,.38],[.3,.62],[.7,.62],[.3,.87],[.7,.87]],
+        9:[[.3,.13],[.7,.13],[.3,.35],[.7,.35],[.5,.5],[.3,.65],[.7,.65],[.3,.87],[.7,.87]]
+      };
+
+      positions[t.n].forEach(([px,py],i) => {
+        const x1 = w*px;
+        const y1 = h*py;
+
+        const color = t.red && t.n === 5
+          ? COLORS.red
+          : [COLORS.green,COLORS.red,COLORS.black][i%3];
+
+        body += `
+          <path d="M${x1-3} ${y1-5}
+            L${x1+3} ${y1+5}
+            L${x1+1} ${y1+9}"
+            stroke="${color}" stroke-width="2.8"
+            stroke-linecap="round" fill="none"/>
+        `;
+      });
+    }
+
+    if (t.suit === "z") {
+      const name = HONOR_NAMES[t.n];
+      const color = t.n === 7 ? COLORS.red
+        : t.n === 6 ? COLORS.green : COLORS.black;
+
+      if (t.n === 5) {
+        body += `
+          <rect x="${w*.23}" y="${h*.25}"
+            width="${w*.54}" height="${h*.5}"
+            fill="none" stroke="#222" stroke-width="2"/>
+        `;
+      } else {
+        body += text(w/2,h*.5,name,
+          t.n===7 ? 29*tWidthFactor() : 26*tWidthFactor(),
+          color);
+      }
+    }
+
+  }
+
+  if (rotated) {
+    transform = `translate(${x+h},${y}) rotate(90)`;
+  }
+
+  return `<g transform="${transform}">${body}</g>`;
+}
+
+function tWidthFactor() {
+  return tileWidth / 48;
+}
+
+/* =========================
+   副露フォーム
+========================= */
+
+function createMeld() {
+
+  const id = ++meldId;
+  const div = document.createElement("div");
+
+  div.className = "meld";
+  div.dataset.id = id;
+
+  div.innerHTML = `
+    <div class="meld-grid">
+
+      <div class="field">
+        <label>鳴きの種類</label>
+        <select class="meld-type">
+          <option value="chi">チー</option>
+          <option value="pon">ポン</option>
+          <option value="daiminkan">大明槓</option>
+          <option value="kakan">加槓</option>
+          <option value="ankan">暗槓</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>牌の指定</label>
+        <input class="meld-tiles" placeholder="例：345m">
+      </div>
+
+      <div class="field">
+        <label>鳴いた相手</label>
+        <select class="meld-from">
+          <option value="left">上家</option>
+          <option value="across">対面</option>
+          <option value="right">下家</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="field extra-tile" style="display:none">
+      <label>加槓の追加牌</label>
+      <input class="added-tile" placeholder="例：5p">
+    </div>
+
+    <button class="danger remove-meld">副露を削除</button>
+  `;
+
+  div.querySelector(".remove-meld").onclick = () => {
+    div.remove();
+    render();
+  };
+
+  div.querySelectorAll("input,select").forEach(el => {
+    el.addEventListener("input",render);
+    el.addEventListener("change",render);
+  });
+
+  div.querySelector(".meld-type").addEventListener("change",e => {
+    div.querySelector(".extra-tile").style.display =
+      e.target.value === "kakan" ? "block" : "none";
+
+    const from = div.querySelector(".meld-from");
+    from.disabled = e.target.value === "ankan";
+
+    render();
+  });
+
+  $("melds").appendChild(div);
+}
+
+$("addMeld").onclick = createMeld;
+
+/* =========================
+   副露描画
+========================= */
+
+function getMeldData(el) {
+
+  const type = el.querySelector(".meld-type").value;
+  const from = el.querySelector(".meld-from").value;
+
+  const tiles = parseTiles(
+    el.querySelector(".meld-tiles").value
+  );
+
+  const extraValue = el.querySelector(".added-tile").value.trim();
+
+  const added = extraValue
+    ? parseTiles(extraValue)
+    : [];
+
+  const expected = {
+    chi:3,
+    pon:3,
+    daiminkan:4,
+    kakan:3,
+    ankan:4
+  }[type];
+
+  if (!tiles.length) return null;
+
+  if (tiles.length !== expected) {
+    throw new Error("副露の牌の枚数が正しくありません。");
+  }
+
+  if (type === "chi" && from !== "left") {
+    throw new Error("チーは上家からのみ可能です。");
+  }
+
+  if (type === "kakan" && added.length !== 1) {
+    throw new Error("加槓には追加牌を1枚指定してください。");
+  }
+
+  if (type !== "kakan" && added.length) {
+    throw new Error("追加牌は加槓の場合のみ指定できます。");
+  }
+
+  if (type === "kakan" &&
+      !tiles.every(t => t.suit === tiles[0].suit &&
+                        t.n === tiles[0].n)) {
+    throw new Error("加槓の元の3枚は同じ牌にしてください。");
+  }
+
+  if (type === "pon" &&
+      !tiles.every(t => t.suit === tiles[0].suit &&
+                        t.n === tiles[0].n)) {
+    throw new Error("ポンは同じ牌を3枚指定してください。");
+  }
+
+  if (type === "daiminkan" &&
+      !tiles.every(t => t.suit === tiles[0].suit &&
+                        t.n === tiles[0].n)) {
+    throw new Error("大明槓は同じ牌を4枚指定してください。");
+  }
+
+  if (type === "ankan" &&
+      !tiles.every(t => t.suit === tiles[0].suit &&
+                        t.n === tiles[0].n)) {
+    throw new Error("暗槓は同じ牌を4枚指定してください。");
+  }
+
+  return {type,from,tiles,added:added[0] || null};
+}
+
+function drawMeld(data,x,y) {
+
+  const {type,from,tiles,added} = data;
+
+  let result = "";
+  let cursor = x;
+
+  if (type === "ankan") {
+
+    tiles.forEach((t,i) => {
+      result += tileSVG(t,cursor,y,i===0 || i===3);
+      cursor += tileWidth + gap;
+    });
+
+    return {svg:result,width:cursor-x};
+  }
+
+  let rotatedIndex = 0;
+
+  if (from === "across") rotatedIndex = 1;
+  if (from === "right") rotatedIndex = tiles.length-1;
+
+  tiles.forEach((t,i) => {
+
+    const rotated = i === rotatedIndex;
+    result += tileSVG(t,cursor,y,false,rotated);
+
+    if (type === "kakan" && rotated) {
+      result += tileSVG(
+        added,
+        cursor + tileHeight*.12,
+        y - tileHeight*.32
+      );
+    }
+
+    cursor += (rotated ? tileHeight : tileWidth) + gap;
+  });
+
+  return {svg:result,width:cursor-x};
+}
+
+/* =========================
+   牌姿全体の描画
+========================= */
+
+function render() {
+
+  const svg = $("board");
+  $("message").textContent = "";
+
+  try {
+
+    const man = parseHandInput("man","m");
+    const pin = parseHandInput("pin","p");
+    const sou = parseHandInput("sou","s");
+    const honor = parseHandInput("honor","z");
+
+    handTiles = [...man,...pin,...sou,...honor];
+
+    if (selectedIndex >= handTiles.length) {
+      selectedIndex = -1;
+    }
+
+    meldGroups = [];
+
+    document.querySelectorAll(".meld").forEach(el => {
+      const data = getMeldData(el);
+      if (data) meldGroups.push(data);
+    });
+
+    const size = $("tileSize").value;
+
+    const scale = {
+      small: .8,
+      normal: 1,
+      large: 1.25
+    }[size];
+
+    tileWidth = 48 * scale;
+    tileHeight = 68 * scale;
+    gap = 3 * scale;
+
+    let x = 18;
+    const y = 42;
+
+    let content = "";
+
+    // 手牌
+    handTiles.forEach((t,i) => {
+
+      const selected = i === selectedIndex;
+
+      content += `
+        <g data-hand-index="${i}"
+          class="${selected ? "selected" : ""}">
+          ${selected
+            ? `<rect x="${x-2}" y="${y-5}"
+                width="${tileWidth+4}"
+                height="${tileHeight+10}"
+                rx="5" fill="#c7e4ff" opacity=".55"/>`
+            : ""}
+          ${tileSVG(t,x,y)}
+        </g>
+      `;
+
+      x += tileWidth + gap;
+    });
+
+    // 副露
+    meldGroups.forEach(data => {
+
+      x += 14;
+
+      const drawn = drawMeld(data,x,y);
+
+      content += `
+        <g>
+          <line x1="${x-7}" y1="${y-4}"
+            x2="${x-7}" y2="${y+tileHeight+4}"
+            stroke="#aaa" stroke-width="1"/>
+          ${drawn.svg}
+        </g>
+      `;
+
+      x += drawn.width + 5;
+    });
+
+    const width = Math.max(300,x+18);
+    const height = 150;
+
+    svg.setAttribute("viewBox",`0 0 ${width} ${height}`);
+    svg.setAttribute("width",width);
+    svg.setAttribute("height",height);
+
+    svg.innerHTML = `
+      <rect width="${width}" height="${height}"
+        fill="${backgroundColor}"/>
+      ${content}
+    `;
+
+    svg.querySelectorAll("[data-hand-index]").forEach(el => {
+      el.addEventListener("click",() => {
+        selectedIndex = Number(el.dataset.handIndex);
+        render();
+      });
+    });
+
+  } catch(e) {
+    $("message").textContent = e.message;
+  }
+}
+
+/* =========================
+   手牌の並び替え
+========================= */
+
+function moveSelected(direction) {
+
+  if (selectedIndex < 0 ||
+      selectedIndex >= handTiles.length) return;
+
+  const next = selectedIndex + direction;
+
+  if (next < 0 || next >= handTiles.length) return;
+
+  [handTiles[selectedIndex],handTiles[next]] =
+    [handTiles[next],handTiles[selectedIndex]];
+
+  // 並び替え結果を各入力欄に反映
+  const suits = {
+    m: "man",
+    p: "pin",
+    s: "sou",
+    z: "honor"
+  };
+
+  for (const [suit,id] of Object.entries(suits)) {
+    $(id).value = handTiles
+      .filter(t => t.suit === suit)
+      .map(t => t.red ? "0" : t.n)
+      .join("");
+  }
+
+  selectedIndex = next;
+  render();
+}
+
+$("moveLeft").onclick = () => moveSelected(-1);
+$("moveRight").onclick = () => moveSelected(1);
+
+/* =========================
+   背景色
+========================= */
+
+document.querySelectorAll(".color-button").forEach(btn => {
+
+  btn.onclick = () => {
+
+    backgroundColor = btn.dataset.color;
+
+    document.querySelectorAll(".color-button")
+      .forEach(b => b.classList.remove("active"));
+
+    btn.classList.add("active");
+
+    render();
+  };
+});
+
+/* =========================
+   PNG出力
+========================= */
+
+function downloadPNG() {
+
+  render();
+
+  if ($("message").textContent) return;
+
+  if (!handTiles.length && !meldGroups.length) {
+    alert("牌を入力してください。");
+    return;
+  }
+
+  const original = $("board");
+  const clone = original.cloneNode(true);
+
+  clone.removeAttribute("id");
+  clone.removeAttribute("role");
+  clone.removeAttribute("aria-label");
+
+  const width = Number(original.getAttribute("width"));
+  const height = Number(original.getAttribute("height"));
+  const resolution = Number($("resolution").value);
+
+  clone.setAttribute("xmlns","http://www.w3.org/2000/svg");
+  clone.setAttribute("width",width);
+  clone.setAttribute("height",height);
+
+  const source = new XMLSerializer().serializeToString(clone);
+
+  const blob = new Blob(
+    [source],
+    {type:"image/svg+xml;charset=utf-8"}
+  );
+
+  const url = URL.createObjectURL(blob);
+  const image = new Image();
+
+  image.onload = () => {
+
+    const canvas = document.createElement("canvas");
+
+    canvas.width = width * resolution;
+    canvas.height = height * resolution;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.scale(resolution,resolution);
+    ctx.drawImage(image,0,0,width,height);
+
+    canvas.toBlob(png => {
+
+      if (!png) {
+        alert("PNGの生成に失敗しました。");
+        URL.revokeObjectURL(url);
+        return;
+      }
+
+      const pngURL = URL.createObjectURL(png);
+      const a = document.createElement("a");
+
+      a.href = pngURL;
+      a.download = "mahjong-tiles.png";
+      a.click();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(pngURL);
+        URL.revokeObjectURL(url);
+      },1000);
+
+    },"image/png");
+  };
+
+  image.onerror = () => {
+    URL.revokeObjectURL(url);
+    alert("画像の生成に失敗しました。");
+  };
+
+  image.src = url;
+}
+
+$("download").onclick = downloadPNG;
+
+/* =========================
+   X投稿テンプレート
+========================= */
+
+const templates = {
+  custom: "",
+  question: "この牌姿、何を切る？\n\n#麻雀 #何切る",
+  analysis: "牌譜解説\n\nこの局面について考察してみました。\n\n#麻雀",
+  hand: "現在の手牌です。\n\n#麻雀",
+  quiz: "麻雀クイズ！\n\nこの牌姿について考えてみてください。\n\n#麻雀"
+};
+
+$("template").onchange = () => {
+  const value = $("template").value;
+
+  if (value !== "custom") {
+    $("tweet").value = templates[value];
+  }
+
+  updateCount();
+};
+
+function updateCount() {
+  $("count").textContent =
+    $("tweet").value.length + "文字";
+}
+
+$("tweet").addEventListener("input",updateCount);
+
+$("copy").onclick = async () => {
+
+  try {
+    await navigator.clipboard.writeText($("tweet").value);
+    alert("投稿文章をコピーしました。");
+  } catch(e) {
+    $("tweet").select();
+    document.execCommand("copy");
+    alert("投稿文章をコピーしました。");
+  }
+};
+
+$("post").onclick = () => {
+
+  const url =
+    "https://twitter.com/intent/tweet?text=" +
+    encodeURIComponent($("tweet").value);
+
+  window.open(url,"_blank","noopener,noreferrer");
+};
+
+/* =========================
+   入力イベント
+========================= */
+
+["man","pin","sou","honor"].forEach(id => {
+  $(id).addEventListener("input",() => {
+    selectedIndex = -1;
+    render();
+  });
+});
+
+$("tileSize").onchange = render;
+$("resolution").onchange = render;
+
+/* =========================
+   初期化
+========================= */
+
+createMeld();
+updateCount();
+render();
+
+</script>
+</body>
+</html>
